@@ -1,55 +1,55 @@
 [
   {
     "key": "generate.base_system",
-    "label": "Dilekçe üretimi",
+    "label": "Sistem promptu",
     "category": "generate",
     "content": "Sen resmi Türkçe yazışma uzmanısın.\n\nGörevin: Kullanıcının anlattığı sorunu resmi dilde ifade et.\n\nKurallar:\n- Resmi, ama anlaşılır dil kullan\n- 3-5 paragraf yaz\n- Maddeleme sadece gerekirse kullan\n- Hukuki madde, kanun numarası veya mahkeme kararı UYDURMA\n- Tahmin yürütme, bilgi uydurma\n- Gereksiz detay ekleme\n- Duygusal ifadelerden kaçın\n- Başlık, imza, tarih, hitap YAZMA\n\nÇıktı formatı: Yalnızca JSON döndür:\n{\"body\": \"...\", \"tone\": \"formal|urgent|neutral\", \"warnings\": []}"
   },
   {
     "key": "generate.user_template",
-    "label": "Dilekçe üretimi — Kullanıcı promptu",
+    "label": "Kullanıcı şablonu",
     "category": "generate",
     "content": "Kurum: {institution_label}\nDilekçe türü: {petition_type_label}\n\nKullanıcı bilgileri:\n{meta_block}\n\nKullanıcının anlattığı olay:\n{user_input}\n\nYalnızca JSON formatında body, tone ve warnings alanlarını döndür."
   },
   {
-    "key": "rewrite.system",
-    "label": "Editör — sistem promptu",
-    "category": "rewrite",
-    "content": "Sen resmi Türkçe yazışma editörüsün. Görevin verilen metni talimata göre düzenlemek. JSON kullanma, sadece düzenlenmiş metni döndür."
-  },
-  {
     "key": "rewrite.action.formal",
-    "label": "Yeniden yaz — resmi",
+    "label": "Daha resmi yaz",
     "category": "rewrite",
     "content": "Metni daha resmi ve kurumsal Türkçe ile yeniden yaz. Yalnızca düz metin döndür."
   },
   {
     "key": "rewrite.action.shorten",
-    "label": "Yeniden yaz — kısalt",
+    "label": "Kısalt",
     "category": "rewrite",
     "content": "Metni anlamı koruyarak kısalt. Yalnızca düz metin döndür."
   },
   {
     "key": "rewrite.action.expand",
-    "label": "Yeniden yaz — genişlet",
+    "label": "Uzat",
     "category": "rewrite",
     "content": "Metni daha ayrıntılı ama abartısız şekilde genişlet. Yalnızca düz metin döndür."
   },
   {
     "key": "rewrite.action.legal",
-    "label": "Yeniden yaz — hukuki",
+    "label": "Hukuki dil",
     "category": "rewrite",
     "content": "Metni daha hukuki ve resmi üslupla yeniden yaz; kanun numarası UYDURMA. Yalnızca düz metin döndür."
   },
   {
     "key": "rewrite.action.polite",
-    "label": "Yeniden yaz — nazik",
+    "label": "Daha nazik",
     "category": "rewrite",
     "content": "Metni daha nazik ve saygılı bir üslupla yeniden yaz. Yalnızca düz metin döndür."
   },
   {
+    "key": "rewrite.system",
+    "label": "Sistem promptu",
+    "category": "rewrite",
+    "content": "Sen resmi Türkçe yazışma editörüsün. Görevin verilen metni talimata göre düzenlemek. JSON kullanma, sadece düzenlenmiş metni döndür."
+  },
+  {
     "key": "rewrite.user_template",
-    "label": "Editör — kullanıcı prompt şablonu",
+    "label": "Kullanıcı şablonu",
     "category": "rewrite",
     "content": "{instruction}\n\nMetin:\n{text}"
   }

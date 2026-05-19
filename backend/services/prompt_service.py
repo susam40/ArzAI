@@ -8,6 +8,18 @@ from backend.models.prompt import Prompt
 
 DEFAULTS_PATH = Path(__file__).resolve().parents[1] / "data" / "prompt_defaults.json"
 
+PROMPT_DISPLAY_ORDER: tuple[str, ...] = (
+    "generate.base_system",
+    "generate.user_template",
+    "rewrite.action.formal",
+    "rewrite.action.shorten",
+    "rewrite.action.expand",
+    "rewrite.action.legal",
+    "rewrite.action.polite",
+    "rewrite.system",
+    "rewrite.user_template",
+)
+
 
 class PromptNotFoundError(KeyError):
     pass
@@ -37,9 +49,10 @@ class PromptService:
                         content=item["content"],
                     )
                 )
-            elif row.key == "generate.user_template" and "{json_instruction}" in row.content:
-                row.content = item["content"]
+            else:
                 row.label = item["label"]
+                if row.key == "generate.user_template" and "{json_instruction}" in row.content:
+                    row.content = item["content"]
         await db.flush()
 
     async def seed_defaults(self, db: AsyncSession) -> None:
@@ -52,7 +65,10 @@ class PromptService:
             .where(Prompt.category != "smart")
             .order_by(Prompt.category, Prompt.key)
         )
-        return list(result.scalars().all())
+        rows = list(result.scalars().all())
+        order = {key: index for index, key in enumerate(PROMPT_DISPLAY_ORDER)}
+        rows.sort(key=lambda row: (order.get(row.key, len(PROMPT_DISPLAY_ORDER)), row.key))
+        return rows
 
     async def get_prompt(self, db: AsyncSession, key: str) -> Prompt:
         result = await db.execute(select(Prompt).where(Prompt.key == key))
