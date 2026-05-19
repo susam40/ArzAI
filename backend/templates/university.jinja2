@@ -1,0 +1,17 @@
+{% if institution_name %}{{ institution_name }}{% endif %}
+{{ institution_header }}
+
+Sayın Yetkili,
+
+Konu: {{ subject }}
+
+{{ ai_generated_body }}
+
+Gereğini arz ederim.
+
+{% if user_name %}{{ user_name }}{% endif %}
+{% if id_number %}Öğrenci/Personel No: {{ id_number }}{% endif %}
+{% if address %}{{ address }}{% endif %}
+{% if phone %}Tel: {{ phone }}{% endif %}
+{% if email %}E-posta: {{ email }}{% endif %}
+Tarih: {{ date }}
