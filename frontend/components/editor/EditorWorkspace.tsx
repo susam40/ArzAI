@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Download, FileText, Loader2, Printer } from "lucide-react";
+import { Download, FileText, Loader2, Printer, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TipTapEditor from "@/components/TipTapEditor";
@@ -13,6 +13,7 @@ import {
   exportDocx,
   exportPdf,
   rewriteText,
+  updatePetition,
   type RewriteAction,
 } from "@/lib/api";
 import { markdownInlineToHtml } from "@/lib/markdown";
@@ -25,6 +26,8 @@ export default function EditorWorkspace() {
   const [content, setContent] = useState("");
   const [rewritingAction, setRewritingAction] = useState<RewriteAction | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(true);
 
@@ -41,6 +44,7 @@ export default function EditorWorkspace() {
   useEffect(() => {
     if (state) {
       saveEditorState({ ...state, content });
+      setSaved(false);
     }
   }, [content, state]);
 
@@ -58,6 +62,24 @@ export default function EditorWorkspace() {
       setError(err instanceof Error ? err.message : "Düzenleme başarısız");
     } finally {
       setRewritingAction(null);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!state || saving) return;
+    setSaving(true);
+    setError(null);
+    setSaved(false);
+    try {
+      await updatePetition(state.petitionId, {
+        subject: state.subject,
+        content,
+      });
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Kaydedilemedi");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -107,6 +129,10 @@ export default function EditorWorkspace() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" disabled={saving || exporting} onClick={() => void handleSave()}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Kaydet
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowPreview((v) => !v)}>
             <FileText className="h-4 w-4" />
             {showPreview ? "Önizlemeyi Gizle" : "Önizleme"}
@@ -125,6 +151,12 @@ export default function EditorWorkspace() {
           </Button>
         </div>
       </header>
+
+      {saved && (
+        <div className="mx-6 mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
+          Dilekçe kaydedildi.
+        </div>
+      )}
 
       {error && (
         <div className="mx-6 mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">

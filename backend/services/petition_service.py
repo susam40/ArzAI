@@ -1,15 +1,17 @@
 import json
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.models.petition import Petition
 from backend.models.schemas import (
     GenerateRequest,
     GenerateResponse,
+    PetitionDetail,
     PetitionMetadata,
     PetitionSummary,
+    PetitionUpdateRequest,
     SmartQuestionsResponse,
 )
 from backend.services.ai.llm_client import LLMError, NvidiaLLMClient
@@ -18,6 +20,10 @@ from backend.services.formatter.structured_output import StructuredOutputFormatt
 from backend.services.prompt_service import PromptService
 from backend.services.template.engine import TemplateEngine
 from backend.services.template.registry import TemplateRegistry
+
+class PetitionNotFoundError(KeyError):
+    pass
+
 
 _SMART_QUESTIONS = {
     "missing_date": "Olay veya başvuru tarihi nedir?",
@@ -92,23 +98,43 @@ class PetitionService:
             warnings=parsed.warnings,
         )
 
+    def _to_summary(self, row: Petition) -> PetitionSummary:
+        return PetitionSummary(
+            id=row.id,
+            institution=row.institution,
+            petition_type=row.petition_type,
+            subject=row.subject,
+            status="düzenlendi" if row.edited_content else "oluşturuldu",
+            created_at=row.created_at,
+            has_edits=bool(row.edited_content),
+        )
+
+    def _to_detail(self, row: Petition) -> PetitionDetail:
+        metadata = PetitionMetadata()
+        if row.metadata_json:
+            try:
+                metadata = PetitionMetadata.model_validate(json.loads(row.metadata_json))
+            except (json.JSONDecodeError, ValueError):
+                pass
+        return PetitionDetail(
+            id=row.id,
+            institution=row.institution,
+            petition_type=row.petition_type,
+            subject=row.subject,
+            content=row.edited_content or row.full_text,
+            user_input=row.user_input,
+            generated_body=row.generated_body,
+            full_text=row.full_text,
+            metadata=metadata,
+            created_at=row.created_at,
+            has_edits=bool(row.edited_content),
+        )
+
     async def list_petitions(self, db: AsyncSession, limit: int = 50) -> list[PetitionSummary]:
         result = await db.execute(
             select(Petition).order_by(Petition.created_at.desc()).limit(limit)
         )
-        rows = result.scalars().all()
-        return [
-            PetitionSummary(
-                id=row.id,
-                institution=row.institution,
-                petition_type=row.petition_type,
-                subject=row.subject,
-                status="düzenlendi" if row.edited_content else "oluşturuldu",
-                created_at=row.created_at,
-                has_edits=bool(row.edited_content),
-            )
-            for row in rows
-        ]
+        return [self._to_summary(row) for row in result.scalars().all()]
 
     def smart_questions(
         self,
@@ -135,6 +161,34 @@ class PetitionService:
     async def get_petition(self, db: AsyncSession, petition_id: str) -> Petition | None:
         result = await db.execute(select(Petition).where(Petition.id == petition_id))
         return result.scalar_one_or_none()
+
+    async def get_petition_detail(self, db: AsyncSession, petition_id: str) -> PetitionDetail:
+        row = await self.get_petition(db, petition_id)
+        if row is None:
+            raise PetitionNotFoundError(f"Petition not found: {petition_id}")
+        return self._to_detail(row)
+
+    async def update_petition(
+        self,
+        db: AsyncSession,
+        petition_id: str,
+        request: PetitionUpdateRequest,
+    ) -> PetitionDetail:
+        row = await self.get_petition(db, petition_id)
+        if row is None:
+            raise PetitionNotFoundError(f"Petition not found: {petition_id}")
+        if request.subject is not None:
+            row.subject = request.subject
+        if request.content is not None:
+            row.edited_content = request.content
+        await db.flush()
+        await db.refresh(row)
+        return self._to_detail(row)
+
+    async def delete_petition(self, db: AsyncSession, petition_id: str) -> None:
+        result = await db.execute(delete(Petition).where(Petition.id == petition_id))
+        if result.rowcount == 0:
+            raise PetitionNotFoundError(f"Petition not found: {petition_id}")
 
     async def update_edited_content(
         self,

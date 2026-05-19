@@ -53,6 +53,25 @@ export interface PetitionSummary {
   has_edits: boolean;
 }
 
+export interface PetitionDetail {
+  id: string;
+  institution: string;
+  petition_type: string;
+  subject: string | null;
+  content: string;
+  user_input: string;
+  generated_body: string;
+  full_text: string;
+  metadata: PetitionMetadata;
+  created_at: string;
+  has_edits: boolean;
+}
+
+export interface PetitionUpdatePayload {
+  subject?: string;
+  content?: string;
+}
+
 export type RewriteAction = "formal" | "shorten" | "expand" | "legal" | "polite";
 
 export interface PromptInfo {
@@ -81,6 +100,9 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
     }
     throw new Error(detail || `API error: ${response.status}`);
   }
+  if (response.status === 204) {
+    return undefined as T;
+  }
   return response.json() as Promise<T>;
 }
 
@@ -92,6 +114,26 @@ export async function fetchTemplates(): Promise<TemplateInfo[]> {
 export async function fetchPetitions(): Promise<PetitionSummary[]> {
   const data = await apiFetch<{ petitions: PetitionSummary[] }>("/api/petitions");
   return data.petitions;
+}
+
+export async function fetchPetition(petitionId: string): Promise<PetitionDetail> {
+  return apiFetch<PetitionDetail>(`/api/petitions/${encodeURIComponent(petitionId)}`);
+}
+
+export async function updatePetition(
+  petitionId: string,
+  payload: PetitionUpdatePayload,
+): Promise<PetitionDetail> {
+  return apiFetch<PetitionDetail>(`/api/petitions/${encodeURIComponent(petitionId)}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deletePetition(petitionId: string): Promise<void> {
+  await apiFetch<void>(`/api/petitions/${encodeURIComponent(petitionId)}`, {
+    method: "DELETE",
+  });
 }
 
 export async function fetchSmartQuestions(payload: {

@@ -83,6 +83,25 @@ class PetitionsListResponse(BaseModel):
     petitions: list[PetitionSummary]
 
 
+class PetitionDetail(BaseModel):
+    id: str
+    institution: str
+    petition_type: str
+    subject: str | None
+    content: str
+    user_input: str
+    generated_body: str
+    full_text: str
+    metadata: PetitionMetadata = Field(default_factory=PetitionMetadata)
+    created_at: datetime
+    has_edits: bool
+
+
+class PetitionUpdateRequest(BaseModel):
+    subject: str | None = Field(None, min_length=1, max_length=256)
+    content: str | None = Field(None, min_length=10, max_length=50000)
+
+
 RewriteAction = Literal["formal", "shorten", "expand", "legal", "polite"]
 
 

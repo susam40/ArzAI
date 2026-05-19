@@ -1,4 +1,4 @@
-import type { GenerateResponse, PetitionMetadata } from "@/lib/api";
+import type { GenerateResponse, PetitionDetail, PetitionMetadata } from "@/lib/api";
 import { EDITOR_STORAGE_KEY, WIZARD_STORAGE_KEY } from "@/lib/constants";
 
 export interface WizardState {
@@ -54,6 +54,18 @@ export function saveEditorFromGenerate(
     institution,
     petitionType,
     warnings: response.warnings,
+  };
+  sessionStorage.setItem(EDITOR_STORAGE_KEY, JSON.stringify(state));
+}
+
+export function saveEditorFromPetition(petition: PetitionDetail): void {
+  const state: EditorState = {
+    petitionId: petition.id,
+    subject: petition.subject ?? "Dilekçe",
+    content: petition.content,
+    institution: petition.institution,
+    petitionType: petition.petition_type,
+    warnings: [],
   };
   sessionStorage.setItem(EDITOR_STORAGE_KEY, JSON.stringify(state));
 }
