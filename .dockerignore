@@ -1,0 +1,16 @@
+.venv
+.git
+.idea
+__pycache__
+*.py[cod]
+*.db
+.pytest_cache
+.env
+.env.*
+!.env.example
+frontend/node_modules
+frontend/.next
+*.egg-info
+dist
+build
+dilekce.db
