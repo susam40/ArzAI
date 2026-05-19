@@ -14,8 +14,8 @@ const features = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <FileCheck className="h-5 w-5" />
@@ -35,7 +35,7 @@ export default function LandingPage() {
         </Button>
       </header>
 
-      <section className="mx-auto max-w-4xl px-6 pb-20 pt-16 text-center">
+      <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-6 pb-12 pt-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -43,7 +43,7 @@ export default function LandingPage() {
         >
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border bg-white px-4 py-1.5 text-xs font-medium text-primary shadow-sm">
             <Sparkles className="h-3.5 w-3.5" />
-            Legal-tech • Gov-tech
+            Hukuk ve kamu yazışmaları
           </span>
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             AI Destekli Resmi
@@ -86,7 +86,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      <footer className="border-t bg-white/80 py-8 text-center text-sm text-muted-foreground">
+      <footer className="mt-auto w-full shrink-0 border-t bg-white py-5 text-center text-sm text-muted-foreground">
         ArzAI — Resmi dilekçe oluşturma platformu
       </footer>
     </div>

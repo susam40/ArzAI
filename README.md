@@ -40,6 +40,8 @@ docker compose up --build
 | API | http://localhost:8000 |
 | API Docs | http://localhost:8000/docs |
 
+Kod değişiklikleri otomatik yansır (`next dev` + `uvicorn --reload`). `package.json` değişince: `docker compose up --build`.
+
 Durdurmak: `docker compose down`  
 Veritabanını da silmek: `docker compose down -v`
 
