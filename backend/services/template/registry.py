@@ -13,30 +13,12 @@ class TemplateConfig:
     petition_type_label: str
     subject_default: str
     institution_header: str
-    system_prompt: str
     template_file: str
+    extra_prompt: str
     required_fields: tuple[TemplateFieldInfo, ...]
 
 
 TEMPLATES_DIR = Path(__file__).resolve().parents[2] / "templates"
-
-_BASE_SYSTEM_PROMPT = """Sen resmi Türkçe yazışma uzmanısın.
-
-Görevin: Kullanıcının anlattığı sorunu resmi dilde ifade et.
-
-Kurallar:
-- Resmi, ama anlaşılır dil kullan
-- 3-5 paragraf yaz
-- Maddeleme sadece gerekirse kullan
-- Hukuki madde, kanun numarası veya mahkeme kararı UYDURMA
-- Tahmin yürütme, bilgi uydurma
-- Gereksiz detay ekleme
-- Duygusal ifadelerden kaçın
-- Başlık, imza, tarih, hitap YAZMA
-
-Çıktı formatı: Yalnızca JSON döndür:
-{"body": "...", "tone": "formal|urgent|neutral", "warnings": []}
-"""
 
 _COMMON_FIELDS = (
     TemplateFieldInfo(name="user_name", label="Ad Soyad", required=True),
@@ -68,8 +50,8 @@ def _config(
         petition_type_label=petition_type_label,
         subject_default=subject_default,
         institution_header=institution_header,
-        system_prompt=_BASE_SYSTEM_PROMPT + extra_prompt,
         template_file=template_file,
+        extra_prompt=extra_prompt,
         required_fields=_COMMON_FIELDS + extra_fields,
     )
 
@@ -150,55 +132,127 @@ TEMPLATE_REGISTRY: dict[str, TemplateConfig] = {
         (TemplateFieldInfo(name="institution_name", label="İşyeri Adı", required=True),),
     ),
     "sgk_complaint": _config(
-        "sgk", "SGK", "complaint", "Şikayet", "SGK Şikayeti", "SOSYAL GÜVENLİK KURUMU BAŞKANLIĞINA",
-        "generic.jinja2", "\nBağlam: SGK hizmet/ödeme şikayeti.\n",
+        "sgk",
+        "SGK",
+        "complaint",
+        "Şikayet",
+        "SGK Şikayeti",
+        "SOSYAL GÜVENLİK KURUMU BAŞKANLIĞINA",
+        "generic.jinja2",
+        "\nBağlam: SGK hizmet/ödeme şikayeti.\n",
     ),
     "sgk_info_request": _config(
-        "sgk", "SGK", "info_request", "Bilgi Talebi", "Bilgi Talebi", "SOSYAL GÜVENLİK KURUMU BAŞKANLIĞINA",
-        "generic.jinja2", "\nBağlam: SGK bilgi edinme talebi.\n",
+        "sgk",
+        "SGK",
+        "info_request",
+        "Bilgi Talebi",
+        "Bilgi Talebi",
+        "SOSYAL GÜVENLİK KURUMU BAŞKANLIĞINA",
+        "generic.jinja2",
+        "\nBağlam: SGK bilgi edinme talebi.\n",
     ),
     "sgk_application": _config(
-        "sgk", "SGK", "application", "Başvuru", "SGK Başvurusu", "SOSYAL GÜVENLİK KURUMU BAŞKANLIĞINA",
-        "generic.jinja2", "\nBağlam: SGK başvuru dilekçesi.\n",
+        "sgk",
+        "SGK",
+        "application",
+        "Başvuru",
+        "SGK Başvurusu",
+        "SOSYAL GÜVENLİK KURUMU BAŞKANLIĞINA",
+        "generic.jinja2",
+        "\nBağlam: SGK başvuru dilekçesi.\n",
     ),
     "court_complaint": _config(
-        "court", "Mahkeme", "complaint", "Şikayet", "Mahkeme Dilekçesi", "MAHKEMESİNE",
-        "generic.jinja2", "\nBağlam: Mahkeme dilekçesi. Taraf bilgilerini kullanıcı verdiyse kullan.\n",
+        "court",
+        "Mahkeme",
+        "complaint",
+        "Şikayet",
+        "Mahkeme Dilekçesi",
+        "MAHKEMESİNE",
+        "generic.jinja2",
+        "\nBağlam: Mahkeme dilekçesi. Taraf bilgilerini kullanıcı verdiyse kullan.\n",
     ),
     "court_objection": _config(
-        "court", "Mahkeme", "objection", "İtiraz", "İtiraz Dilekçesi", "MAHKEMESİNE",
-        "generic.jinja2", "\nBağlam: Mahkeme itiraz dilekçesi.\n",
+        "court",
+        "Mahkeme",
+        "objection",
+        "İtiraz",
+        "İtiraz Dilekçesi",
+        "MAHKEMESİNE",
+        "generic.jinja2",
+        "\nBağlam: Mahkeme itiraz dilekçesi.\n",
     ),
     "court_application": _config(
-        "court", "Mahkeme", "application", "Başvuru", "Mahkeme Başvurusu", "MAHKEMESİNE",
-        "generic.jinja2", "\nBağlam: Mahkeme başvuru dilekçesi.\n",
+        "court",
+        "Mahkeme",
+        "application",
+        "Başvuru",
+        "Mahkeme Başvurusu",
+        "MAHKEMESİNE",
+        "generic.jinja2",
+        "\nBağlam: Mahkeme başvuru dilekçesi.\n",
     ),
     "municipality_complaint": _config(
-        "municipality", "Belediye", "complaint", "Şikayet", "Belediye Şikayeti", "BELEDİYE BAŞKANLIĞINA",
-        "generic.jinja2", "\nBağlam: Belediye hizmet şikayeti.\n",
+        "municipality",
+        "Belediye",
+        "complaint",
+        "Şikayet",
+        "Belediye Şikayeti",
+        "BELEDİYE BAŞKANLIĞINA",
+        "generic.jinja2",
+        "\nBağlam: Belediye hizmet şikayeti.\n",
     ),
     "municipality_info_request": _config(
-        "municipality", "Belediye", "info_request", "Bilgi Talebi", "Bilgi Talebi", "BELEDİYE BAŞKANLIĞINA",
-        "generic.jinja2", "\nBağlam: Belediye bilgi talebi.\n",
+        "municipality",
+        "Belediye",
+        "info_request",
+        "Bilgi Talebi",
+        "Bilgi Talebi",
+        "BELEDİYE BAŞKANLIĞINA",
+        "generic.jinja2",
+        "\nBağlam: Belediye bilgi talebi.\n",
     ),
     "employer_complaint": _config(
-        "employer", "İşveren", "complaint", "Şikayet", "İşyeri Şikayeti", "İŞVERENE",
-        "labor_law.jinja2", "\nBağlam: İşyeri şikayet dilekçesi.\n",
+        "employer",
+        "İşveren",
+        "complaint",
+        "Şikayet",
+        "İşyeri Şikayeti",
+        "İŞVERENE",
+        "labor_law.jinja2",
+        "\nBağlam: İşyeri şikayet dilekçesi.\n",
         (TemplateFieldInfo(name="institution_name", label="İşyeri Adı", required=True),),
     ),
     "employer_resignation": _config(
-        "employer", "İşveren", "resignation", "İşten Ayrılma", "İşten Ayrılma Bildirimi", "İŞVERENE",
-        "labor_law.jinja2", "\nBağlam: İşten ayrılma bildirimi.\n",
+        "employer",
+        "İşveren",
+        "resignation",
+        "İşten Ayrılma",
+        "İşten Ayrılma Bildirimi",
+        "İŞVERENE",
+        "labor_law.jinja2",
+        "\nBağlam: İşten ayrılma bildirimi.\n",
         (TemplateFieldInfo(name="institution_name", label="İşyeri Adı", required=True),),
     ),
     "employer_leave": _config(
-        "employer", "İşveren", "leave", "İzin Talebi", "İzin Talebi", "İŞVERENE",
-        "labor_law.jinja2", "\nBağlam: İşyerinden izin talebi.\n",
+        "employer",
+        "İşveren",
+        "leave",
+        "İzin Talebi",
+        "İzin Talebi",
+        "İŞVERENE",
+        "labor_law.jinja2",
+        "\nBağlam: İşyerinden izin talebi.\n",
         (TemplateFieldInfo(name="institution_name", label="İşyeri Adı", required=True),),
     ),
     "kvkk_application": _config(
-        "kvkk", "KVKK", "kvkk_request", "KVKK Talebi", "KVKK Başvurusu", "VERİ SORUMLUSUNA",
-        "generic.jinja2", "\nBağlam: KVKK kapsamında veri talebi/şikayet.\n",
+        "kvkk",
+        "KVKK",
+        "kvkk_request",
+        "KVKK Talebi",
+        "KVKK Başvurusu",
+        "VERİ SORUMLUSUNA",
+        "generic.jinja2",
+        "\nBağlam: KVKK kapsamında veri talebi/şikayet.\n",
     ),
 }
 

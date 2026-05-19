@@ -104,3 +104,19 @@ class SmartQuestionsRequest(BaseModel):
 
 class SmartQuestionsResponse(BaseModel):
     questions: list[str]
+
+
+class PromptInfo(BaseModel):
+    key: str
+    label: str
+    category: str
+    content: str
+    updated_at: datetime
+
+
+class PromptsListResponse(BaseModel):
+    prompts: list[PromptInfo]
+
+
+class PromptUpdateRequest(BaseModel):
+    content: str = Field(..., min_length=1, max_length=20000)

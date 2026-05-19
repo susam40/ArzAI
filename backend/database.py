@@ -27,6 +27,14 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     from backend.models.petition import Petition  # noqa: F401
+    from backend.models.prompt import Prompt  # noqa: F401
+    from backend.services.prompt_service import PromptService
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with async_session_factory() as session:
+        prompts = PromptService()
+        await prompts.prune_code_managed_prompts(session)
+        await prompts.seed_defaults(session)
+        await session.commit()

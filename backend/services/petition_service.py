@@ -15,8 +15,18 @@ from backend.models.schemas import (
 from backend.services.ai.llm_client import LLMError, NvidiaLLMClient
 from backend.services.ai.prompt_builder import PromptBuilder
 from backend.services.formatter.structured_output import StructuredOutputFormatter
+from backend.services.prompt_service import PromptService
 from backend.services.template.engine import TemplateEngine
 from backend.services.template.registry import TemplateRegistry
+
+_SMART_QUESTIONS = {
+    "missing_date": "Olay veya başvuru tarihi nedir?",
+    "missing_name": "Adınız ve soyadınız nedir?",
+    "missing_institution": "İlgili kurum veya işyeri adı nedir?",
+    "sgk_prior_application": "SGK'ya daha önce başvuru yaptınız mı? Hangi tarihte?",
+    "short_input": "Olayı birkaç cümleyle daha detaylı anlatabilir misiniz?",
+    "missing_subject": "Dilekçe konusu ne olmalı?",
+}
 
 
 class PetitionService:
@@ -27,16 +37,19 @@ class PetitionService:
         llm_client: NvidiaLLMClient | None = None,
         formatter: StructuredOutputFormatter | None = None,
         template_engine: TemplateEngine | None = None,
+        prompt_service: PromptService | None = None,
     ) -> None:
         self._registry = registry or TemplateRegistry()
-        self._prompt_builder = prompt_builder or PromptBuilder(self._registry)
+        self._prompt_service = prompt_service or PromptService()
+        self._prompt_builder = prompt_builder or PromptBuilder(self._registry, self._prompt_service)
         self._llm_client = llm_client or NvidiaLLMClient()
         self._formatter = formatter or StructuredOutputFormatter()
         self._template_engine = template_engine or TemplateEngine(self._registry)
 
     async def generate(self, db: AsyncSession, request: GenerateRequest) -> GenerateResponse:
         config = self._prompt_builder.get_config(request.institution, request.petition_type)
-        system_prompt, user_prompt = self._prompt_builder.build(
+        system_prompt, user_prompt = await self._prompt_builder.build(
+            db,
             request.institution,
             request.petition_type,
             request.user_input,
@@ -106,17 +119,17 @@ class PetitionService:
     ) -> SmartQuestionsResponse:
         questions: list[str] = []
         if not metadata.date:
-            questions.append("Olay veya başvuru tarihi nedir?")
+            questions.append(_SMART_QUESTIONS["missing_date"])
         if not metadata.user_name:
-            questions.append("Adınız ve soyadınız nedir?")
+            questions.append(_SMART_QUESTIONS["missing_name"])
         if institution in {"court", "consumer_court", "labor_law", "employer"} and not metadata.institution_name:
-            questions.append("İlgili kurum veya işyeri adı nedir?")
+            questions.append(_SMART_QUESTIONS["missing_institution"])
         if institution == "sgk" and "başvuru" not in user_input.lower():
-            questions.append("SGK'ya daha önce başvuru yaptınız mı? Hangi tarihte?")
+            questions.append(_SMART_QUESTIONS["sgk_prior_application"])
         if len(user_input) < 80:
-            questions.append("Olayı birkaç cümleyle daha detaylı anlatabilir misiniz?")
+            questions.append(_SMART_QUESTIONS["short_input"])
         if not metadata.subject:
-            questions.append("Dilekçe konusu ne olmalı?")
+            questions.append(_SMART_QUESTIONS["missing_subject"])
         return SmartQuestionsResponse(questions=questions[:4])
 
     async def get_petition(self, db: AsyncSession, petition_id: str) -> Petition | None:

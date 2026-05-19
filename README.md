@@ -39,6 +39,7 @@ docker compose up --build
 | Frontend | http://localhost:3000 |
 | API | http://localhost:8000 |
 | API Docs | http://localhost:8000/docs |
+| Prompt yönetimi | http://localhost:3000/prompts |
 
 Kod değişiklikleri otomatik yansır (`next dev` + `uvicorn --reload`). `package.json` değişince: `docker compose up --build`.
 
