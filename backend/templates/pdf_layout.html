@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>{{ title }}</title>
+  <style>
+    @page { size: A4; margin: 2.5cm 2cm; }
+    body {
+      font-family: "DejaVu Serif", "Times New Roman", serif;
+      font-size: 12pt;
+      line-height: 1.6;
+      color: #111;
+    }
+    .content { white-space: pre-wrap; }
+    h1 { font-size: 14pt; text-align: center; margin-bottom: 1.5em; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <div class="content">{{ content }}</div>
+</body>
+</html>
