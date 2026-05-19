@@ -1,0 +1,16 @@
+{{ institution_header }}
+
+Sayın Heyet,
+
+Konu: {{ subject }}
+
+{{ ai_generated_body }}
+
+Gereğini arz ederim.
+
+{% if user_name %}Başvuran: {{ user_name }}{% endif %}
+{% if id_number %}T.C. Kimlik No: {{ id_number }}{% endif %}
+{% if address %}Adres: {{ address }}{% endif %}
+{% if phone %}Tel: {{ phone }}{% endif %}
+{% if email %}E-posta: {{ email }}{% endif %}
+Tarih: {{ date }}

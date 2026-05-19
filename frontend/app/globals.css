@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 221 58% 28%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 214 32% 94%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 214 32% 94%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 221 58% 28%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer components {
+  .a4-preview {
+    width: 100%;
+    max-width: 595px;
+    min-height: 842px;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 10px 40px -10px rgb(15 23 42 / 0.15);
+    border: 1px solid hsl(var(--border));
+    padding: 2.5rem 2rem;
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 12pt;
+    line-height: 1.65;
+    color: #111;
+    white-space: pre-wrap;
+  }
+
+  .editor-prose .ProseMirror {
+    @apply min-h-[360px] outline-none text-sm leading-relaxed;
+    font-family: "Times New Roman", Georgia, serif;
+  }
+
+  .editor-prose .ProseMirror p.is-editor-empty:first-child::before {
+    @apply text-muted-foreground;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+}
