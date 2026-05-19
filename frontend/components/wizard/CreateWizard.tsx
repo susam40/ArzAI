@@ -251,13 +251,6 @@ export default function CreateWizard() {
                     placeholder="Adınız Soyadınız"
                   />
                 </label>
-                <label className="space-y-1.5 text-sm">
-                  <span className="font-medium">T.C. Kimlik No</span>
-                  <Input
-                    value={state.metadata.id_number ?? ""}
-                    onChange={(e) => updateMeta("id_number", e.target.value)}
-                  />
-                </label>
                 <label className="space-y-1.5 text-sm sm:col-span-2">
                   <span className="font-medium">Adres</span>
                   <Input
@@ -270,14 +263,6 @@ export default function CreateWizard() {
                   <Input
                     value={state.metadata.phone ?? ""}
                     onChange={(e) => updateMeta("phone", e.target.value)}
-                  />
-                </label>
-                <label className="space-y-1.5 text-sm">
-                  <span className="font-medium">E-posta</span>
-                  <Input
-                    type="email"
-                    value={state.metadata.email ?? ""}
-                    onChange={(e) => updateMeta("email", e.target.value)}
                   />
                 </label>
                 <label className="space-y-1.5 text-sm">

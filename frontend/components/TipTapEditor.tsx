@@ -4,6 +4,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect } from "react";
+import { htmlToMarkdownInline, markdownToEditorHtml } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
 
 interface TipTapEditorProps {
@@ -24,18 +25,18 @@ export default function TipTapEditor({
       StarterKit,
       Placeholder.configure({ placeholder: "Dilekçe metnini burada düzenleyin..." }),
     ],
-    content: content.replace(/\n/g, "<br>"),
+    content: markdownToEditorHtml(content),
     editable,
     onUpdate: ({ editor: ed }) => {
-      onChange(ed.getText({ blockSeparator: "\n" }));
+      onChange(htmlToMarkdownInline(ed.getHTML()));
     },
   });
 
   useEffect(() => {
     if (!editor) return;
-    const current = editor.getText({ blockSeparator: "\n" });
+    const current = htmlToMarkdownInline(editor.getHTML());
     if (content !== current) {
-      editor.commands.setContent(content.replace(/\n/g, "<br>"));
+      editor.commands.setContent(markdownToEditorHtml(content));
     }
   }, [content, editor]);
 

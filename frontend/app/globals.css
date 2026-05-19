@@ -48,6 +48,11 @@
     white-space: pre-wrap;
   }
 
+  .a4-preview .petition-body strong,
+  .editor-prose .ProseMirror strong {
+    font-weight: 700;
+  }
+
   .editor-prose .ProseMirror {
     @apply min-h-[360px] outline-none text-sm leading-relaxed;
     font-family: "Times New Roman", Georgia, serif;

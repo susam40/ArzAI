@@ -22,10 +22,8 @@ TEMPLATES_DIR = Path(__file__).resolve().parents[2] / "templates"
 
 _COMMON_FIELDS = (
     TemplateFieldInfo(name="user_name", label="Ad Soyad", required=True),
-    TemplateFieldInfo(name="id_number", label="T.C. Kimlik No", required=False),
     TemplateFieldInfo(name="address", label="Adres", required=False),
     TemplateFieldInfo(name="phone", label="Telefon", required=False),
-    TemplateFieldInfo(name="email", label="E-posta", required=False),
     TemplateFieldInfo(name="date", label="Tarih", required=True),
     TemplateFieldInfo(name="subject", label="Konu", required=True),
 )

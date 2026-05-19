@@ -15,6 +15,7 @@ import {
   rewriteText,
   type RewriteAction,
 } from "@/lib/api";
+import { markdownInlineToHtml } from "@/lib/markdown";
 import { loadEditorState, saveEditorState, type EditorState } from "@/lib/wizard-store";
 import { INSTITUTIONS } from "@/lib/constants";
 
@@ -22,7 +23,8 @@ export default function EditorWorkspace() {
   const router = useRouter();
   const [state, setState] = useState<EditorState | null>(null);
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [rewritingAction, setRewritingAction] = useState<RewriteAction | null>(null);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(true);
 
@@ -46,8 +48,8 @@ export default function EditorWorkspace() {
     INSTITUTIONS.find((i) => i.id === state?.institution)?.label ?? state?.institution;
 
   const handleRewrite = async (action: RewriteAction) => {
-    if (!content) return;
-    setLoading(true);
+    if (!content || rewritingAction) return;
+    setRewritingAction(action);
     setError(null);
     try {
       const rewritten = await rewriteText(content, action);
@@ -55,13 +57,13 @@ export default function EditorWorkspace() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Düzenleme başarısız");
     } finally {
-      setLoading(false);
+      setRewritingAction(null);
     }
   };
 
   const handleExport = async (format: "pdf" | "docx") => {
-    if (!state) return;
-    setLoading(true);
+    if (!state || exporting) return;
+    setExporting(true);
     setError(null);
     try {
       const title = state.subject || "Dilekce";
@@ -73,7 +75,7 @@ export default function EditorWorkspace() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Dışa aktarma başarısız");
     } finally {
-      setLoading(false);
+      setExporting(false);
     }
   };
 
@@ -81,7 +83,7 @@ export default function EditorWorkspace() {
     const w = window.open("", "_blank");
     if (!w) return;
     w.document.write(
-      `<html><head><title>${state?.subject ?? "Dilekçe"}</title></head><body style="font-family:Times New Roman,serif;padding:2cm;white-space:pre-wrap">${content.replace(/</g, "&lt;")}</body></html>`,
+      `<html><head><title>${state?.subject ?? "Dilekçe"}</title></head><body style="font-family:Times New Roman,serif;padding:2cm;line-height:1.65">${markdownInlineToHtml(content)}</body></html>`,
     );
     w.document.close();
     w.print();
@@ -109,15 +111,15 @@ export default function EditorWorkspace() {
             <FileText className="h-4 w-4" />
             {showPreview ? "Önizlemeyi Gizle" : "Önizleme"}
           </Button>
-          <Button variant="outline" size="sm" disabled={loading} onClick={handlePrint}>
+          <Button variant="outline" size="sm" disabled={exporting} onClick={handlePrint}>
             <Printer className="h-4 w-4" />
             Yazdır
           </Button>
-          <Button variant="outline" size="sm" disabled={loading} onClick={() => handleExport("docx")}>
+          <Button variant="outline" size="sm" disabled={exporting} onClick={() => handleExport("docx")}>
             <Download className="h-4 w-4" />
             DOCX
           </Button>
-          <Button size="sm" disabled={loading} onClick={() => handleExport("pdf")}>
+          <Button size="sm" disabled={exporting} onClick={() => handleExport("pdf")}>
             <Download className="h-4 w-4" />
             PDF İndir
           </Button>
@@ -142,7 +144,7 @@ export default function EditorWorkspace() {
 
       <div className="grid flex-1 gap-0 overflow-hidden lg:grid-cols-2">
         <div className="overflow-y-auto border-r p-6 space-y-4">
-          <AiRewriteBar onRewrite={handleRewrite} loading={loading} />
+          <AiRewriteBar onRewrite={handleRewrite} loadingAction={rewritingAction} />
           <TipTapEditor content={content} onChange={setContent} />
         </div>
         <div className="hidden overflow-y-auto bg-muted/20 p-6 lg:block">

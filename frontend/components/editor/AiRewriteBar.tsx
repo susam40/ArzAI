@@ -14,10 +14,10 @@ const ACTIONS: { action: RewriteAction; label: string }[] = [
 
 interface AiRewriteBarProps {
   onRewrite: (action: RewriteAction) => void;
-  loading: boolean;
+  loadingAction: RewriteAction | null;
 }
 
-export default function AiRewriteBar({ onRewrite, loading }: AiRewriteBarProps) {
+export default function AiRewriteBar({ onRewrite, loadingAction }: AiRewriteBarProps) {
   return (
     <div className="rounded-xl border bg-card p-4">
       <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
@@ -31,10 +31,10 @@ export default function AiRewriteBar({ onRewrite, loading }: AiRewriteBarProps) 
             type="button"
             variant="outline"
             size="sm"
-            disabled={loading}
+            disabled={loadingAction !== null}
             onClick={() => onRewrite(action)}
           >
-            {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+            {loadingAction === action ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
             {label}
           </Button>
         ))}

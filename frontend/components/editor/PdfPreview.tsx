@@ -1,5 +1,7 @@
 "use client";
 
+import { markdownInlineToHtml } from "@/lib/markdown";
+
 interface PdfPreviewProps {
   content: string;
   title: string;
@@ -13,7 +15,12 @@ export default function PdfPreview({ content, title }: PdfPreviewProps) {
       </p>
       <div className="a4-preview">
         <h2 className="mb-6 text-center text-sm font-bold uppercase tracking-wide">{title}</h2>
-        {content || (
+        {content ? (
+          <div
+            className="petition-body"
+            dangerouslySetInnerHTML={{ __html: markdownInlineToHtml(content) }}
+          />
+        ) : (
           <p className="text-center text-muted-foreground italic">Dilekçe metni burada görünecek</p>
         )}
       </div>
