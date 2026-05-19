@@ -86,11 +86,12 @@ async def test_export_pdf(client):
     petition_id = gen.json()["petition_id"]
     response = await client.post(
         "/api/export/pdf",
-        json={"petition_id": petition_id, "title": "Test"},
+        json={"petition_id": petition_id, "title": "Şikayet Dilekçesi"},
     )
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.content[:4] == b"%PDF"
+    assert "filename*=UTF-8" in response.headers["content-disposition"]
 
 
 @pytest.mark.asyncio

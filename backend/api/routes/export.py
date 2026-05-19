@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +11,11 @@ from backend.services.pdf.generator import PDFGenerator
 from backend.services.petition_service import PetitionService
 
 router = APIRouter(prefix="/export", tags=["export"])
+
+
+def _attachment_disposition(filename: str) -> str:
+    ascii_fallback = "".join(c if ord(c) < 128 else "_" for c in filename) or "download"
+    return f'attachment; filename="{ascii_fallback}"; filename*=UTF-8\'\'{quote(filename)}'
 
 
 def get_petition_service() -> PetitionService:
@@ -57,7 +64,7 @@ async def export_pdf(
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{request.title}.pdf"'},
+        headers={"Content-Disposition": _attachment_disposition(f"{request.title}.pdf")},
     )
 
 
@@ -76,5 +83,5 @@ async def export_docx(
     return Response(
         content=docx_bytes,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f'attachment; filename="{request.title}.docx"'},
+        headers={"Content-Disposition": _attachment_disposition(f"{request.title}.docx")},
     )
