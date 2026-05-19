@@ -29,6 +29,9 @@ export default function LandingPage() {
           <Link href="/dashboard" className="hover:text-foreground">
             Geçmiş
           </Link>
+          <Link href="/prompts" className="hover:text-foreground">
+            Promptlar
+          </Link>
         </nav>
         <Button asChild>
           <Link href="/create">Başla</Link>
@@ -43,7 +46,7 @@ export default function LandingPage() {
         >
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border bg-white px-4 py-1.5 text-xs font-medium text-primary shadow-sm">
             <Sparkles className="h-3.5 w-3.5" />
-            Hukuk ve kamu yazışmaları
+            Hukuk ve Kamu Yazışmaları
           </span>
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             AI Destekli Resmi

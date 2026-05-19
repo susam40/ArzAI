@@ -11,6 +11,8 @@ os.environ.setdefault("NVIDIA_API_KEY", "")
 
 from backend.api.main import app  # noqa: E402
 from backend.database import Base, get_db  # noqa: E402
+from backend.models.prompt import Prompt  # noqa: F401
+from backend.services.prompt_service import PromptService  # noqa: E402
 
 test_engine = create_async_engine(
     "sqlite+aiosqlite://",
@@ -24,6 +26,10 @@ TestSessionLocal = async_sessionmaker(test_engine, expire_on_commit=False)
 async def client():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with TestSessionLocal() as session:
+        await PromptService().seed_defaults(session)
+        await session.commit()
 
     async def override_get_db():
         async with TestSessionLocal() as session:

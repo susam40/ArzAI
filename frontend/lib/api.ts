@@ -55,6 +55,14 @@ export interface PetitionSummary {
 
 export type RewriteAction = "formal" | "shorten" | "expand" | "legal" | "polite";
 
+export interface PromptInfo {
+  key: string;
+  label: string;
+  category: string;
+  content: string;
+  updated_at: string;
+}
+
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -103,6 +111,18 @@ export async function generatePetition(payload: GenerateRequest): Promise<Genera
   return apiFetch<GenerateResponse>("/api/generate", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export async function fetchPrompts(): Promise<PromptInfo[]> {
+  const data = await apiFetch<{ prompts: PromptInfo[] }>("/api/prompts");
+  return data.prompts;
+}
+
+export async function updatePrompt(key: string, content: string): Promise<PromptInfo> {
+  return apiFetch<PromptInfo>(`/api/prompts/${encodeURIComponent(key)}`, {
+    method: "PUT",
+    body: JSON.stringify({ content }),
   });
 }
 

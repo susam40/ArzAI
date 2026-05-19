@@ -105,6 +105,19 @@ async def test_export_docx(client):
 
 
 @pytest.mark.asyncio
+async def test_update_prompt(client):
+    response = await client.put(
+        "/api/prompts/generate.base_system",
+        json={"content": "Updated system prompt for tests."},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["key"] == "generate.base_system"
+    assert data["content"] == "Updated system prompt for tests."
+    assert data["updated_at"] is not None
+
+
+@pytest.mark.asyncio
 async def test_invalid_template(client):
     response = await client.post(
         "/api/generate",

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, LayoutDashboard, PlusCircle, Sparkles } from "lucide-react";
+import { FileText, LayoutDashboard, PlusCircle, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const nav = [
   { href: "/", label: "Ana Sayfa", icon: Sparkles },
   { href: "/create", label: "Dilekçe Oluştur", icon: PlusCircle },
   { href: "/dashboard", label: "Geçmiş", icon: LayoutDashboard },
+  { href: "/prompts", label: "Promptlar", icon: Settings },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
