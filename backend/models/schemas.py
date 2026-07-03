@@ -21,6 +21,7 @@ class GenerateRequest(BaseModel):
     petition_type: str = Field(..., min_length=1, max_length=64)
     user_input: str = Field(..., min_length=10, max_length=5000)
     metadata: PetitionMetadata = Field(default_factory=PetitionMetadata)
+    model: str | None = Field(None, min_length=1, max_length=128)
 
 
 class PetitionOutput(BaseModel):
@@ -108,6 +109,17 @@ RewriteAction = Literal["formal", "shorten", "expand", "legal", "polite"]
 class RewriteRequest(BaseModel):
     text: str = Field(..., min_length=10, max_length=8000)
     action: RewriteAction
+    model: str | None = Field(None, min_length=1, max_length=128)
+
+
+class LlmModelInfo(BaseModel):
+    id: str
+
+
+class LlmModelsResponse(BaseModel):
+    models: list[LlmModelInfo]
+    current_model: str
+    mock_mode: bool
 
 
 class RewriteResponse(BaseModel):

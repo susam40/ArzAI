@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.middleware import RequestLoggingMiddleware
-from backend.api.routes import export, generate, petitions, prompts, rewrite, templates
+from backend.api.routes import export, generate, models, petitions, prompts, rewrite, templates
 from backend.config import get_settings
 from backend.database import init_db
 
@@ -41,6 +41,7 @@ app.include_router(templates.router, prefix="/api")
 app.include_router(petitions.router, prefix="/api")
 app.include_router(rewrite.router, prefix="/api")
 app.include_router(prompts.router, prefix="/api")
+app.include_router(models.router, prefix="/api")
 
 
 @app.get("/health")

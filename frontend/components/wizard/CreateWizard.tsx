@@ -23,6 +23,7 @@ import {
   saveWizardState,
   type WizardState,
 } from "@/lib/wizard-store";
+import ModelSelector from "@/components/layout/ModelSelector";
 import WizardProgress from "./WizardProgress";
 
 export default function CreateWizard() {
@@ -129,6 +130,9 @@ export default function CreateWizard() {
       <div className="mb-2">
         <h1 className="text-2xl font-bold tracking-tight">Yeni Dilekçe</h1>
         <p className="text-muted-foreground">Adım adım resmi dilekçenizi oluşturun</p>
+      </div>
+      <div className="mb-6 rounded-xl border bg-card p-4 lg:hidden">
+        <ModelSelector />
       </div>
       <WizardProgress step={state.step} />
 

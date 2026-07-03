@@ -1,4 +1,21 @@
+import { getSelectedModel } from "@/lib/model-store";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
+
+export interface LlmModelInfo {
+  id: string;
+}
+
+export interface LlmModelsResponse {
+  models: LlmModelInfo[];
+  current_model: string;
+  mock_mode: boolean;
+}
+
+function llmModelPayload(): { model?: string } {
+  const model = getSelectedModel();
+  return model ? { model } : {};
+}
 
 export interface TemplateFieldInfo {
   name: string;
@@ -33,6 +50,7 @@ export interface GenerateRequest {
   petition_type: string;
   user_input: string;
   metadata: PetitionMetadata;
+  model?: string;
 }
 
 export interface GenerateResponse {
@@ -149,10 +167,14 @@ export async function fetchSmartQuestions(payload: {
   return data.questions;
 }
 
+export async function fetchLlmModels(): Promise<LlmModelsResponse> {
+  return apiFetch<LlmModelsResponse>("/api/models");
+}
+
 export async function generatePetition(payload: GenerateRequest): Promise<GenerateResponse> {
   return apiFetch<GenerateResponse>("/api/generate", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ ...payload, ...llmModelPayload() }),
   });
 }
 
@@ -171,7 +193,7 @@ export async function updatePrompt(key: string, content: string): Promise<Prompt
 export async function rewriteText(text: string, action: RewriteAction): Promise<string> {
   const data = await apiFetch<{ text: string }>("/api/rewrite", {
     method: "POST",
-    body: JSON.stringify({ text, action }),
+    body: JSON.stringify({ text, action, ...llmModelPayload() }),
   });
   return data.text;
 }

@@ -19,7 +19,7 @@ async def rewrite_text(
     service: RewriteService = Depends(get_rewrite_service),
 ) -> RewriteResponse:
     try:
-        text = await service.rewrite(db, request.text, request.action)
+        text = await service.rewrite(db, request.text, request.action, model=request.model)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return RewriteResponse(text=text)

@@ -63,7 +63,11 @@ class PetitionService:
         )
 
         try:
-            raw_output = await self._llm_client.generate_json(system_prompt, user_prompt)
+            raw_output = await self._llm_client.generate_json(
+                system_prompt,
+                user_prompt,
+                model=request.model,
+            )
         except LLMError as exc:
             raise ValueError(f"AI üretimi başarısız: {exc}") from exc
 

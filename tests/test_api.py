@@ -2,6 +2,16 @@ import pytest
 
 
 @pytest.mark.asyncio
+async def test_list_models(client):
+    response = await client.get("/api/models")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["current_model"]
+    assert len(data["models"]) >= 1
+    assert data["mock_mode"] is True
+
+
+@pytest.mark.asyncio
 async def test_health(client):
     response = await client.get("/health")
     assert response.status_code == 200
@@ -19,6 +29,26 @@ async def test_list_templates(client):
     assert "university" in institutions
     assert "consumer_court" in institutions
     assert "labor_law" in institutions
+
+
+@pytest.mark.asyncio
+async def test_generate_with_custom_model(client):
+    payload = {
+        "institution": "cimer",
+        "petition_type": "complaint",
+        "user_input": (
+            "Belediye hizmet binasında asansör uzun süredir çalışmıyor. "
+            "Yaşlı ve engelli vatandaşlar mağdur oluyor. Acil müdahale talep ediyorum."
+        ),
+        "metadata": {
+            "user_name": "Ahmet Yılmaz",
+            "date": "2026-05-19",
+            "subject": "Asansör Arızası Şikayeti",
+        },
+        "model": "meta/llama-3.3-70b-instruct",
+    }
+    response = await client.post("/api/generate", json=payload)
+    assert response.status_code == 200
 
 
 @pytest.mark.asyncio

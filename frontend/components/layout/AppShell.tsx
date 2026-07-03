@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FileText, LayoutDashboard, PlusCircle, Settings, Sparkles } from "lucide-react";
+import ModelSelector from "@/components/layout/ModelSelector";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -56,7 +57,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="border-t p-4">
+        <div className="border-t p-4 space-y-4">
+          <ModelSelector />
           <p className="text-xs text-muted-foreground">
             AI destekli resmi dilekçe platformu. Bilgileriniz güvenle işlenir.
           </p>

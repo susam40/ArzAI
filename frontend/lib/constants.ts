@@ -30,3 +30,4 @@ export const INSTITUTIONS: InstitutionOption[] = [
 
 export const WIZARD_STORAGE_KEY = "arzai_wizard_state";
 export const EDITOR_STORAGE_KEY = "arzai_editor_state";
+export const MODEL_STORAGE_KEY = "arzai_llm_model";

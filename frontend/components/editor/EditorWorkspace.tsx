@@ -18,6 +18,7 @@ import {
 } from "@/lib/api";
 import { markdownInlineToHtml } from "@/lib/markdown";
 import { loadEditorState, saveEditorState, type EditorState } from "@/lib/wizard-store";
+import ModelSelector from "@/components/layout/ModelSelector";
 import { INSTITUTIONS } from "@/lib/constants";
 
 export default function EditorWorkspace() {
@@ -128,7 +129,11 @@ export default function EditorWorkspace() {
             {institutionLabel} · {state.subject}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="min-w-[220px] max-w-xs lg:hidden">
+            <ModelSelector />
+          </div>
+          <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" disabled={saving || exporting} onClick={() => void handleSave()}>
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Kaydet
@@ -149,6 +154,7 @@ export default function EditorWorkspace() {
             <Download className="h-4 w-4" />
             PDF İndir
           </Button>
+          </div>
         </div>
       </header>
 
